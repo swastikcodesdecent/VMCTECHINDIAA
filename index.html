@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VMC Tech India — Web Solutions for Indian Businesses</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #0F172A;
+      --paper: #F8FAFC;
+      --accent: #4F46E5;
+      --accent2: #2563EB;
+      --accent-light: #60A5FA;
+      --muted: #64748B;
+      --border: rgba(15,23,42,0.10);
+      --card-bg: #ffffff;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Custom cursor */
+    .cursor {
+      width: 10px; height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.1s;
+    }
+    .cursor-ring {
+      width: 36px; height: 36px;
+      border: 1.5px solid var(--accent);
+      border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none;
+      z-index: 9998;
+      transition: all 0.15s ease;
+      opacity: 0.6;
+    }
+
+    /* HEADER — floating pill glassmorphism */
+    header {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(860px, calc(100vw - 48px));
+      z-index: 500;
+      padding: 0 10px 0 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 0;
+      height: 60px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      box-shadow: 0 8px 32px rgba(15, 23, 42, 0.18), 0 1px 0 rgba(255,255,255,0.15) inset;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    header.scrolled {
+      background: rgba(255, 255, 255, 0.18);
+      box-shadow: 0 12px 40px rgba(15, 23, 42, 0.22), 0 1px 0 rgba(255,255,255,0.2) inset;
+      border-color: rgba(255, 255, 255, 0.28);
+    }
+
+    /* DARK NAV — for light-background sections */
+    header.dark {
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(24px) saturate(200%);
+      -webkit-backdrop-filter: blur(24px) saturate(200%);
+      border-color: rgba(15, 23, 42, 0.12);
+      box-shadow: 0 8px 32px rgba(15, 23, 42, 0.10), 0 1px 0 rgba(255,255,255,0.8) inset;
+    }
+    header.dark .logo-wrap { color: var(--ink); }
+    header.dark .logo-text em { color: var(--accent); }
+    header.dark .logo-mark span { background: rgba(15,23,42,0.6); }
+    header.dark .logo-mark span:nth-child(1) { background: var(--accent); }
+    header.dark .logo-mark span:nth-child(4) { background: var(--accent2); }
+    header.dark nav a {
+      color: var(--muted);
+      text-shadow: none;
+    }
+    header.dark nav a::after { background: var(--accent); }
+    header.dark nav a:hover { color: var(--ink); }
+    header.dark .nav-cta {
+      background: var(--ink) !important;
+      border-color: var(--ink) !important;
+      color: #fff !important;
+    }
+    header.dark .nav-cta:hover { background: var(--accent) !important; border-color: var(--accent) !important; }
+    header.dark .hamburger span { background: var(--ink); }
+
+    .logo-wrap {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; color: #ffffff;
+      flex-shrink: 0;
+      margin-right: auto;
+    }
+    .logo-mark {
+      width: 36px; height: 36px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 3px;
+    }
+    .logo-mark span {
+      display: block; background: rgba(255,255,255,0.7); border-radius: 2px;
+    }
+    .logo-mark span:nth-child(1) { background: var(--accent-light); animation: blink1 3s ease-in-out infinite; }
+    .logo-mark span:nth-child(2) { background: rgba(255,255,255,0.75); }
+    .logo-mark span:nth-child(3) { background: rgba(255,255,255,0.75); }
+    .logo-mark span:nth-child(4) { background: #ffffff; animation: blink2 3s ease-in-out infinite 1s; }
+    @keyframes blink1 { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    @keyframes blink2 { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .logo-text {
+      font-family: 'Syne', sans-serif;
+      font-size: 17px; font-weight: 700; letter-spacing: -0.02em;
+    }
+    .logo-text em { font-style: normal; color: var(--accent-light); }
+
+    nav { display: flex; align-items: center; gap: 24px; flex-shrink: 0; }
+    nav a {
+      font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.85);
+      text-decoration: none; letter-spacing: 0.01em;
+      transition: color 0.2s; position: relative;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+    nav a::after {
+      content: ''; position: absolute; bottom: -3px; left: 0;
+      width: 0; height: 1px; background: rgba(255,255,255,0.8);
+      transition: width 0.3s;
+    }
+    nav a:hover { color: #ffffff; }
+    nav a:hover::after { width: 100%; }
+
+    .nav-cta {
+      background: rgba(255,255,255,0.18) !important;
+      color: #ffffff !important;
+      padding: 9px 22px; border-radius: 999px;
+      font-weight: 600 !important; font-size: 13px !important;
+      letter-spacing: 0.02em !important;
+      border: 1px solid rgba(255,255,255,0.3) !important;
+      transition: all 0.25s !important;
+      backdrop-filter: blur(8px);
+      text-shadow: none !important;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-left: 8px;
+    }
+    .nav-cta::after { display: none !important; }
+    .nav-cta:hover { background: rgba(255,255,255,0.28) !important; border-color: rgba(255,255,255,0.5) !important; color: white !important; }
+
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: none; padding: 4px;
+    }
+    .hamburger span { display: block; width: 24px; height: 1.5px; background: rgba(255,255,255,0.9); transition: all 0.3s; }
+
+    /* MOBILE NAV */
+    .mobile-overlay {
+      display: none; position: fixed; inset: 0; z-index: 900;
+      background: #0f0e2a; padding: 72px 40px 40px;
+      flex-direction: column; justify-content: center;
+    }
+    .mobile-overlay.open { display: flex; animation: slideDown 0.35s ease; }
+    @keyframes slideDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+    .mobile-overlay a {
+      font-family: 'Syne', sans-serif; font-size: 40px; font-weight: 700;
+      color: rgba(248,250,252,0.2); text-decoration: none;
+      line-height: 1.2; transition: color 0.2s;
+    }
+    .mobile-overlay a:hover { color: #F8FAFC; }
+    .mobile-overlay .mob-cta {
+      margin-top: 40px; font-size: 16px !important;
+      background: var(--accent); color: white !important;
+      padding: 16px 32px; border-radius: 4px; display: inline-block;
+      font-family: 'DM Sans', sans-serif !important; font-weight: 500 !important;
+    }
+    .close-btn {
+      position: absolute; top: 24px; right: 40px;
+      background: none; border: none; cursor: none;
+      font-size: 32px; color: #F8FAFC; line-height: 1;
+    }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      padding: 160px 40px 80px;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      position: relative; overflow: hidden;
+    }
+
+    .hero-video-wrap {
+      position: absolute; inset: 0; z-index: 0; overflow: hidden;
+    }
+    .hero-video-wrap video {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      filter: blur(3px) brightness(0.45) saturate(1.4);
+      transform: scale(1.06);
+    }
+    .hero-video-overlay {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(15,14,42,0.55) 0%, rgba(15,14,42,0.3) 50%, rgba(15,14,42,0.75) 100%),
+        radial-gradient(ellipse 70% 60% at 70% 40%, rgba(79,70,229,0.18) 0%, transparent 70%);
+    }
+    .hero-bg-grid {
+      position: absolute; inset: 0; z-index: 1;
+      background-image:
+        linear-gradient(rgba(248,250,252,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(248,250,252,0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .hero > *:not(.hero-video-wrap):not(.hero-bg-grid):not(.hero-number):not(.video-badge) { position: relative; z-index: 2; }
+    .hero-number { z-index: 1; }
+    .hero-eyebrow { color: var(--accent-light) !important; }
+    .hero-eyebrow::before { background: var(--accent-light) !important; }
+    .hero h1 { color: #F8FAFC; }
+    .hero h1 em { color: var(--accent-light); }
+    .hero h1 .outline { -webkit-text-stroke: 2px rgba(248,250,252,0.45); color: transparent; }
+    .hero-sub { color: rgba(248,250,252,0.7) !important; }
+    .hero-badges { border-top-color: rgba(248,250,252,0.12) !important; }
+    .badge-item { color: rgba(248,250,252,0.6) !important; }
+    .badge-dot { background: var(--accent-light) !important; }
+    .btn-secondary { border-color: rgba(248,250,252,0.4) !important; color: #F8FAFC !important; }
+    .btn-secondary:hover { background: rgba(248,250,252,0.1) !important; }
+    .hero-number { -webkit-text-stroke: 1px rgba(248,250,252,0.06) !important; }
+    .video-badge {
+      position: absolute; bottom: 36px; right: 40px; z-index: 10;
+      display: flex; align-items: center; gap: 10px;
+      font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: rgba(248,250,252,0.45); font-weight: 500;
+    }
+    .video-badge-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent-light);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+
+    .hero-eyebrow {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 24px;
+      display: flex; align-items: center; gap: 12px;
+      animation: fadeUp 0.8s ease both;
+    }
+    .hero-eyebrow::before {
+      content: ''; display: block; width: 40px; height: 1px; background: var(--accent);
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(48px, 8vw, 110px);
+      font-weight: 800; line-height: 0.95;
+      letter-spacing: -0.04em;
+      max-width: 900px;
+      position: relative; z-index: 2;
+      animation: fadeUp 0.8s 0.1s ease both;
+    }
+    .hero h1 em { font-style: normal; color: var(--accent-light); }
+    .hero h1 .outline {
+      -webkit-text-stroke: 2px rgba(255,255,255,0.5);
+      color: transparent;
+    }
+
+    .hero-sub {
+      max-width: 460px; margin-top: 36px;
+      font-size: 17px; color: rgba(255,255,255,0.72); line-height: 1.65;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    .hero-actions {
+      display: flex; gap: 16px; margin-top: 40px; flex-wrap: wrap;
+      animation: fadeUp 0.8s 0.3s ease both;
+    }
+    .btn-primary {
+      background: var(--accent); color: white;
+      padding: 16px 36px; border-radius: 4px;
+      font-size: 15px; font-weight: 500; text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: inline-flex; align-items: center; gap: 10px;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(79,70,229,0.35); }
+    .btn-secondary {
+      background: transparent; color: var(--ink);
+      padding: 16px 36px; border-radius: 4px;
+      font-size: 15px; font-weight: 500; text-decoration: none;
+      border: 1px solid var(--ink);
+      transition: all 0.2s;
+      display: inline-flex; align-items: center; gap: 10px;
+    }
+    .btn-secondary:hover { background: var(--ink); color: var(--paper); }
+
+    .hero-badges {
+      display: flex; gap: 28px; margin-top: 56px; flex-wrap: wrap;
+      border-top: 1px solid rgba(255,255,255,0.15); padding-top: 32px;
+      animation: fadeUp 0.8s 0.4s ease both;
+    }
+    .badge-item {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; color: rgba(255,255,255,0.65);
+    }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+    .hero-number {
+      position: absolute; right: 40px; top: 50%;
+      transform: translateY(-50%);
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(100px, 18vw, 240px);
+      font-weight: 800; letter-spacing: -0.06em;
+      color: transparent; -webkit-text-stroke: 1px rgba(79,70,229,0.10);
+      pointer-events: none; user-select: none;
+      animation: fadeIn 1s 0.5s ease both;
+      line-height: 1;
+    }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+    /* SECTION COMMON */
+    section { padding: 100px 40px; }
+    .section-label {
+      font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--accent); font-weight: 500;
+      display: flex; align-items: center; gap: 12px; margin-bottom: 40px;
+    }
+    .section-label::before { content:''; width: 32px; height: 1px; background: var(--accent); }
+    .section-h {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(32px, 5vw, 60px);
+      font-weight: 700; line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 56px;
+    }
+
+    /* SERVICES */
+    .services { background: #0f0e2a; color: var(--paper); }
+    .services .section-label { color: var(--accent-light); }
+    .services .section-h { color: #F8FAFC; }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1px; background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .svc-card {
+      background: #0f0e2a; padding: 44px 36px;
+      transition: background 0.3s;
+      position: relative; overflow: hidden;
+    }
+    .svc-card::before {
+      content: ''; position: absolute; top: 0; left: 0;
+      width: 100%; height: 2px; background: var(--accent-light);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+    .svc-card:hover { background: rgba(79,70,229,0.08); }
+    .svc-card:hover::before { transform: scaleX(1); }
+    .svc-num {
+      font-size: 11px; letter-spacing: 0.1em; color: rgba(248,250,252,0.3);
+      font-weight: 500; margin-bottom: 32px;
+    }
+    .svc-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px; font-weight: 600; color: #F8FAFC;
+      margin-bottom: 14px; line-height: 1.2;
+    }
+    .svc-card p { font-size: 14px; color: rgba(248,250,252,0.5); line-height: 1.7; margin-bottom: 28px; }
+    .svc-price {
+      font-family: 'Syne', sans-serif;
+      font-size: 26px; font-weight: 700; color: var(--accent-light);
+    }
+
+    /* WHY CHOOSE */
+    .why { background: var(--paper); }
+    .why-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 32px;
+    }
+    .why-card {
+      padding: 40px 32px;
+      background: white; border: 1px solid var(--border);
+      border-radius: 2px;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .why-card:hover { transform: translateY(-6px); box-shadow: 0 24px 48px rgba(79,70,229,0.10); }
+    .why-icon-box {
+      width: 52px; height: 52px;
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 24px; font-size: 24px;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .why-card:hover .why-icon-box { border-color: var(--accent); background: var(--accent); }
+    .why-card:hover .why-icon-box svg { stroke: white; }
+    .why-icon-box svg { width: 24px; height: 24px; stroke: var(--ink); transition: stroke 0.3s; }
+    .why-card h3 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 600; margin-bottom: 12px; }
+    .why-card p { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+    /* HOW IT WORKS */
+    .process { background: #EEF2FF; }
+    .process-steps {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0; position: relative;
+    }
+    .process-steps::before {
+      content: ''; position: absolute;
+      top: 24px; left: 0; right: 0; height: 1px;
+      background: var(--border); z-index: 0;
+    }
+    .step-item { padding: 0 24px 0 0; position: relative; }
+    .step-num {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--ink); color: var(--paper);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700;
+      margin-bottom: 28px; position: relative; z-index: 1;
+      transition: background 0.3s;
+    }
+    .step-item:hover .step-num { background: var(--accent); }
+    .step-item h3 { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 600; margin-bottom: 10px; }
+    .step-item p { font-size: 14px; color: var(--muted); line-height: 1.65; }
+
+    /* PORTFOLIO */
+    .portfolio { background: var(--paper); }
+    .port-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .port-card {
+      border: 1px solid var(--border); overflow: hidden; border-radius: 2px;
+      transition: transform 0.3s; background: white;
+    }
+    .port-card:hover { transform: scale(1.02); }
+    .port-img {
+      height: 200px; display: flex; align-items: flex-end;
+      padding: 20px; position: relative; overflow: hidden;
+    }
+    .port-img-1 { background: linear-gradient(135deg, #4F46E5, #1e1b6b); }
+    .port-img-2 { background: linear-gradient(135deg, #2563EB, #0f2d7a); }
+    .port-img-3 { background: linear-gradient(135deg, #60A5FA, #2563EB); }
+    .port-tag {
+      font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(255,255,255,0.6); font-weight: 500;
+      background: rgba(255,255,255,0.1); padding: 6px 12px; border-radius: 2px;
+    }
+    .port-body { padding: 24px; }
+    .port-body h3 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .port-body p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+    /* CTA BAND */
+    .cta-band {
+      background: var(--accent);
+      padding: 80px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 32px;
+    }
+    .cta-band h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(28px, 4vw, 50px);
+      font-weight: 700; color: white; line-height: 1.1;
+      letter-spacing: -0.03em; max-width: 600px;
+    }
+    .btn-white {
+      background: white; color: var(--accent);
+      padding: 18px 40px; border-radius: 4px;
+      font-size: 15px; font-weight: 600; text-decoration: none;
+      white-space: nowrap; transition: all 0.2s;
+    }
+    .btn-white:hover { background: var(--ink); color: white; }
+
+    /* CONTACT */
+    .contact { background: var(--paper); }
+    .contact-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; }
+    .contact-info h3 { font-family:'Syne',sans-serif; font-size:28px; font-weight:700; margin-bottom:32px; }
+    .cinfo-item {
+      display: flex; gap: 16px; margin-bottom: 24px;
+      padding-bottom: 24px; border-bottom: 1px solid var(--border);
+    }
+    .cinfo-item:last-child { border-bottom: none; }
+    .cinfo-icon { width: 20px; height: 20px; stroke: var(--accent); flex-shrink: 0; margin-top: 2px; }
+    .cinfo-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+    .cinfo-val { font-size: 15px; font-weight: 500; }
+
+    .contact-form { display: flex; flex-direction: column; gap: 16px; }
+    .contact-form input,
+    .contact-form textarea {
+      width: 100%; padding: 16px 20px;
+      border: 1px solid var(--border); background: white;
+      font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--ink);
+      border-radius: 2px; outline: none;
+      transition: border-color 0.2s;
+    }
+    .contact-form input:focus,
+    .contact-form textarea:focus { border-color: var(--accent); }
+    .contact-form textarea { min-height: 120px; resize: vertical; }
+    .contact-form button {
+      background: var(--ink); color: var(--paper);
+      border: none; padding: 16px 32px; font-size: 15px; font-weight: 500;
+      font-family: 'DM Sans', sans-serif; cursor: none; border-radius: 2px;
+      transition: background 0.2s; align-self: flex-start;
+    }
+    .contact-form button:hover { background: var(--accent); }
+
+    /* FOOTER */
+    footer {
+      background: #0f0e2a; color: rgba(248,250,252,0.45);
+      padding: 40px; font-size: 13px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: gap;
+    }
+    .footer-logo {
+      font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700;
+      color: #F8FAFC; display: flex; align-items: center; gap: 10px;
+    }
+    .footer-logo-mark {
+      width: 28px; height: 28px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+    }
+    .footer-logo-mark span { display: block; background: rgba(248,250,252,0.2); border-radius: 1px; }
+    .footer-logo-mark span:nth-child(1) { background: var(--accent-light); }
+
+    /* SCROLL REVEAL */
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+      header { padding: 0 24px; }
+      nav { display: none; }
+      .hamburger { display: flex; }
+      .hero { padding: 120px 24px 60px; }
+      .hero-number { display: none; }
+      section { padding: 72px 24px; }
+      .cta-band { padding: 56px 24px; }
+      .contact-wrap { grid-template-columns: 1fr; gap: 48px; }
+      footer { padding: 32px 24px; flex-direction: column; gap: 16px; align-items: flex-start; }
+      .process-steps::before { display: none; }
+      .step-item { padding: 0 0 32px; border-bottom: 1px solid var(--border); }
+      .close-btn { right: 24px; }
+      .mobile-overlay { padding: 80px 24px 40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- HEADER -->
+  <header id="header">
+    <a href="#" class="logo-wrap">
+      <div class="logo-mark">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      <div class="logo-text">VMC Tech <em>India</em></div>
+    </a>
+    <nav>
+      <a href="#services">Services</a>
+      <a href="#why">Why Us</a>
+      <a href="#process">Process</a>
+      <a href="#portfolio">Work</a>
+      <a href="#contact" class="nav-cta">Free Demo →</a>
+    </nav>
+    <button class="hamburger" id="hamburger" onclick="openMenu()" aria-label="Menu">
+      <span></span><span></span>
+    </button>
+  </header>
+
+  <!-- MOBILE OVERLAY -->
+  <div class="mobile-overlay" id="mobileMenu">
+    <button class="close-btn" onclick="closeMenu()">×</button>
+    <a href="#services" onclick="closeMenu()">Services</a>
+    <a href="#why" onclick="closeMenu()">Why Us</a>
+    <a href="#process" onclick="closeMenu()">Process</a>
+    <a href="#portfolio" onclick="closeMenu()">Work</a>
+    <a href="#contact" class="mob-cta" onclick="closeMenu()">Get Free Demo</a>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-video-wrap">
+      <video autoplay muted loop playsinline>
+        <source src="bg.mp4" type="video/mp4">
+      </video>
+      <div class="hero-video-overlay"></div>
+    </div>
+    <div class="hero-bg-grid"></div>
+    <div class="hero-number">01</div>
+    <div class="video-badge"><div class="video-badge-dot"></div>Live Preview</div>
+    <div class="hero-eyebrow">Kolkata-based Web Studio</div>
+    <h1>
+      Websites That<br>
+      <em>Actually</em> Work<br>
+      for <span class="outline">India.</span>
+    </h1>
+    <p class="hero-sub">
+      Custom web solutions for Indian startups and small businesses.
+      Mobile-first, fast, and priced for real growth.
+    </p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn-primary">Get Your Free Demo ↗</a>
+      <a href="#services" class="btn-secondary">See Services</a>
+    </div>
+    <div class="hero-badges">
+      <div class="badge-item"><div class="badge-dot"></div>Mobile-First Design</div>
+      <div class="badge-item"><div class="badge-dot"></div>Demo Before You Pay</div>
+      <div class="badge-item"><div class="badge-dot"></div>Delivered in 7–10 Days</div>
+      <div class="badge-item"><div class="badge-dot"></div>Transparent INR Pricing</div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="services reveal" id="services">
+    <div class="section-label">What We Build</div>
+    <div class="section-h">Our Services</div>
+    <div class="services-grid">
+      <div class="svc-card">
+        <div class="svc-num">01 / 04</div>
+        <h3>Business Website</h3>
+        <p>Complete 5–7 page website with contact forms, SEO setup, and fully mobile-responsive design tailored for your industry.</p>
+        <div class="svc-price">From ₹4,999</div>
+      </div>
+      <div class="svc-card">
+        <div class="svc-num">02 / 04</div>
+        <h3>Landing Page</h3>
+        <p>High-converting single-page site for campaigns, product launches, or lead generation. Built to turn visitors into customers.</p>
+        <div class="svc-price">From ₹2,999</div>
+      </div>
+      <div class="svc-card">
+        <div class="svc-num">03 / 04</div>
+        <h3>Website Redesign</h3>
+        <p>Transform your outdated site with modern design, better UX, and improved performance—without losing your existing audience.</p>
+        <div class="svc-price">From ₹6,999</div>
+      </div>
+      <div class="svc-card">
+        <div class="svc-num">04 / 04</div>
+        <h3>Maintenance & Support</h3>
+        <p>Monthly updates, security patches, and technical support so your site stays fast and secure, every single month.</p>
+        <div class="svc-price">₹999 / month</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY CHOOSE -->
+  <section class="why reveal" id="why">
+    <div class="section-label">Our Edge</div>
+    <div class="section-h">Why Choose Us</div>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-icon-box">
+          <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+        <h3>Affordable for Indian Businesses</h3>
+        <p>Transparent INR pricing designed for startups and small businesses. No hidden costs, no surprises.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon-box">
+          <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+        <h3>Free Demo Before Payment</h3>
+        <p>See your website design first. You only pay when you're 100% satisfied with the demo. Zero risk.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon-box">
+          <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        </div>
+        <h3>Fast Delivery (7–10 Days)</h3>
+        <p>Quick turnaround without compromising quality. Your professional website live in under two weeks.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon-box">
+          <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+        </div>
+        <h3>Direct Communication</h3>
+        <p>Talk directly with the developer. No middlemen, no delays. Fast responses and clear timelines guaranteed.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="process reveal" id="process">
+    <div class="section-label">How It Works</div>
+    <div class="section-h">Four Simple Steps</div>
+    <div class="process-steps">
+      <div class="step-item">
+        <div class="step-num">01</div>
+        <h3>Free Consultation</h3>
+        <p>Share your requirements via email or our contact form. We listen and understand your vision.</p>
+      </div>
+      <div class="step-item">
+        <div class="step-num">02</div>
+        <h3>Get Free Demo</h3>
+        <p>We create a live demo based on your needs. No payment required at this stage—see it first.</p>
+      </div>
+      <div class="step-item">
+        <div class="step-num">03</div>
+        <h3>Review & Approve</h3>
+        <p>Review the demo, request any changes, and approve the final design before making any payment.</p>
+      </div>
+      <div class="step-item">
+        <div class="step-num">04</div>
+        <h3>Launch & Support</h3>
+        <p>We build, test, and launch. Ongoing support included to keep your site running smoothly.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PORTFOLIO -->
+  <section class="portfolio reveal" id="portfolio">
+    <div class="section-label">Recent Work</div>
+    <div class="section-h">Selected Projects</div>
+    <div class="port-grid">
+      <div class="port-card">
+        <div class="port-img port-img-1"><span class="port-tag">E-Commerce</span></div>
+        <div class="port-body">
+          <h3>Fashion Boutique</h3>
+          <p>Modern online store with payment integration and inventory management system.</p>
+        </div>
+      </div>
+      <div class="port-card">
+        <div class="port-img port-img-2"><span class="port-tag">Restaurant</span></div>
+        <div class="port-body">
+          <h3>Cloud Kitchen</h3>
+          <p>Menu showcase with online ordering and location-based delivery tracking.</p>
+        </div>
+      </div>
+      <div class="port-card">
+        <div class="port-img port-img-3"><span class="port-tag">SaaS</span></div>
+        <div class="port-body">
+          <h3>Product Launch Page</h3>
+          <p>High-converting landing page with lead capture, testimonials, and analytics.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BAND -->
+  <div class="cta-band reveal">
+    <h2>Ready to grow your business online?</h2>
+    <a href="#contact" class="btn-white">Start Your Free Demo →</a>
+  </div>
+
+  <!-- CONTACT -->
+  <section class="contact reveal" id="contact">
+    <div class="section-label">Get In Touch</div>
+    <div class="section-h">Let's Talk</div>
+    <div class="contact-wrap">
+      <div class="contact-info">
+        <h3>We'd love to hear from you.</h3>
+        <div class="cinfo-item">
+          <svg class="cinfo-icon" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+          <div>
+            <div class="cinfo-label">Email</div>
+            <div class="cinfo-val">online.techvistaa@gmail.com</div>
+          </div>
+        </div>
+        <div class="cinfo-item">
+          <svg class="cinfo-icon" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+          <div>
+            <div class="cinfo-label">Location</div>
+            <div class="cinfo-val">Kolkata, West Bengal, India</div>
+          </div>
+        </div>
+        <div class="cinfo-item">
+          <svg class="cinfo-icon" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <div>
+            <div class="cinfo-label">Response Time</div>
+            <div class="cinfo-val">Within 24 hours</div>
+          </div>
+        </div>
+      </div>
+      <div class="contact-form">
+        <input type="text" placeholder="Your Name" />
+        <input type="email" placeholder="Email Address" />
+        <input type="text" placeholder="Business / Website Type" />
+        <textarea placeholder="Tell us about your project..."></textarea>
+        <button onclick="submitForm()">Send Message →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">
+      <div class="footer-logo-mark">
+        <span></span><span></span><span></span><span></span>
+      </div>
+      VMC Tech India — an initiative by Tech Vistaa
+    </div>
+    <div>© 2026 VMC Tech India. All rights reserved.</div>
+  </footer>
+
+  <script>
+    // Custom cursor
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.left = mx - 5 + 'px';
+      cursor.style.top = my - 5 + 'px';
+    });
+    function animateRing() {
+      rx += (mx - rx - 18) * 0.12;
+      ry += (my - ry - 18) * 0.12;
+      ring.style.left = rx + 'px';
+      ring.style.top = ry + 'px';
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+    document.querySelectorAll('a, button, input, textarea').forEach(el => {
+      el.addEventListener('mouseenter', () => { cursor.style.transform = 'scale(2)'; ring.style.transform = 'scale(1.5)'; });
+      el.addEventListener('mouseleave', () => { cursor.style.transform = 'scale(1)'; ring.style.transform = 'scale(1)'; });
+    });
+
+    // Header — smart colour-switching based on section background
+    const header = document.getElementById('header');
+
+    // Sections with LIGHT backgrounds that need a dark nav
+    const lightSections = document.querySelectorAll('#why, #process, #portfolio, #contact');
+
+    function updateHeader() {
+      const headerBottom = header.getBoundingClientRect().bottom;
+      let overLight = false;
+
+      lightSections.forEach(sec => {
+        const r = sec.getBoundingClientRect();
+        // Check if the header's vertical midpoint overlaps this section
+        if (r.top < headerBottom + 10 && r.bottom > 0) {
+          overLight = true;
+        }
+      });
+
+      header.classList.toggle('scrolled', window.scrollY > 40);
+      header.classList.toggle('dark', overLight);
+    }
+
+    window.addEventListener('scroll', updateHeader, { passive: true });
+    updateHeader(); // run once on load
+
+    // Mobile menu
+    function openMenu() {
+      document.getElementById('mobileMenu').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMenu() {
+      document.getElementById('mobileMenu').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    // Scroll reveal
+    const revealEls = document.querySelectorAll('.reveal');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+    }, { threshold: 0.08 });
+    revealEls.forEach(el => obs.observe(el));
+
+    // Form submit
+    function submitForm() {
+      alert('Thank you! We will get back to you within 24 hours.');
+    }
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        const t = document.querySelector(a.getAttribute('href'));
+        if(t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        closeMenu();
+      });
+    });
+  </script>
+</body>
+</html>
