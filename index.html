@@ -26,28 +26,6 @@
       background: var(--paper);
       color: var(--ink);
       overflow-x: hidden;
-      cursor: none;
-    }
-
-    /* Custom cursor */
-    .cursor {
-      width: 10px; height: 10px;
-      background: var(--accent);
-      border-radius: 50%;
-      position: fixed; top: 0; left: 0;
-      pointer-events: none;
-      z-index: 9999;
-      transition: transform 0.1s;
-    }
-    .cursor-ring {
-      width: 36px; height: 36px;
-      border: 1.5px solid var(--accent);
-      border-radius: 50%;
-      position: fixed; top: 0; left: 0;
-      pointer-events: none;
-      z-index: 9998;
-      transition: all 0.15s ease;
-      opacity: 0.6;
     }
 
     /* HEADER — floating pill glassmorphism */
@@ -163,7 +141,7 @@
 
     .hamburger {
       display: none; flex-direction: column; gap: 5px;
-      background: none; border: none; cursor: none; padding: 4px;
+      background: none; border: none; padding: 4px;
     }
     .hamburger span { display: block; width: 24px; height: 1.5px; background: rgba(255,255,255,0.9); transition: all 0.3s; }
 
@@ -189,7 +167,7 @@
     }
     .close-btn {
       position: absolute; top: 24px; right: 40px;
-      background: none; border: none; cursor: none;
+      background: none; border: none;
       font-size: 32px; color: #F8FAFC; line-height: 1;
     }
 
@@ -511,7 +489,7 @@
     .contact-form button {
       background: var(--ink); color: var(--paper);
       border: none; padding: 16px 32px; font-size: 15px; font-weight: 500;
-      font-family: 'DM Sans', sans-serif; cursor: none; border-radius: 2px;
+      font-family: 'DM Sans', sans-serif; border-radius: 2px;
       transition: background 0.2s; align-self: flex-start;
     }
     .contact-form button:hover { background: var(--accent); }
@@ -558,8 +536,6 @@
 </head>
 <body>
 
-  <div class="cursor" id="cursor"></div>
-  <div class="cursor-ring" id="cursorRing"></div>
 
   <!-- HEADER -->
   <header id="header">
@@ -806,27 +782,6 @@
   </footer>
 
   <script>
-    // Custom cursor
-    const cursor = document.getElementById('cursor');
-    const ring = document.getElementById('cursorRing');
-    let mx = 0, my = 0, rx = 0, ry = 0;
-    document.addEventListener('mousemove', e => {
-      mx = e.clientX; my = e.clientY;
-      cursor.style.left = mx - 5 + 'px';
-      cursor.style.top = my - 5 + 'px';
-    });
-    function animateRing() {
-      rx += (mx - rx - 18) * 0.12;
-      ry += (my - ry - 18) * 0.12;
-      ring.style.left = rx + 'px';
-      ring.style.top = ry + 'px';
-      requestAnimationFrame(animateRing);
-    }
-    animateRing();
-    document.querySelectorAll('a, button, input, textarea').forEach(el => {
-      el.addEventListener('mouseenter', () => { cursor.style.transform = 'scale(2)'; ring.style.transform = 'scale(1.5)'; });
-      el.addEventListener('mouseleave', () => { cursor.style.transform = 'scale(1)'; ring.style.transform = 'scale(1)'; });
-    });
 
     // Header — smart colour-switching based on section background
     const header = document.getElementById('header');
